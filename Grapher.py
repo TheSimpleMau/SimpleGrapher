@@ -26,31 +26,39 @@ class Grapher():
                  y_axis_label:str = 'y', 
                  title:str = None, 
                  grid:bool = True, 
-                 name_image:str = None) -> None:
+                 name_image:str = None,
+                 colors:list = []) -> None:
         #Setting the title of the graph if the users don't specify the name of it.
         if title == None:
             if len(functions) == 1:
                 self.title = fr'${functions[0].replace("**","^")}$' #In case of there's only one function to graph, then the title name will be the function.
             else:
                 self.title = "Functions" #Otherwise, the title will be "Funcitons".
-        if name_image == None and len(functions) == 1:
+        # To save the files and, in case of the user don't choose a name for the image, don't overwrite the saved
+        if name_image == None and len(functions) == 1: #In case that there's only one funciton, the name of the image will be the function
             files = os.listdir()
-            self.name_image = self.title.replace("$","")
+            self.name_image = self.title.replace("$","").replace("/","÷") #To save the name of the image. Replacing the diagonal (/) to the simbol of division
+            ecaution = self.title.replace("$","").replace("/","÷") #To save the ecuation/function given
             i = 0
-            for file in files:
-                if file == self.name_image+'.png':
-                    i+=1
-                    self.name_image = f'{self.name_image} - {i}'
-        elif name_image == None and len(functions) > 1:
+            while True:
+                for file in files:
+                    if file == self.name_image+'.png' or file == self.name_image+f' - {i}'+'.png':
+                        i+=1
+                        self.name_image = f'{ecaution} - {i}'
+                if self.name_image not in files:
+                    break
+        elif name_image == None and len(functions) > 1: #In case that there's more thant one function/ecuation showing on the graph, we will be naming it as "Function"
             files = os.listdir()
             self.name_image = "Functions"
+            base_name = "Functions"
             i = 0
             for file in files:
-                if file == self.name_image+'.png':
+                if file == self.name_image+'.png' or file == self.name_image+f' - {i}'+'.png':
                     i+=1
-                    self.name_image = f'{self.name_image} - {i}'
-        else:
+                    self.name_image = f'{base_name} - {i}'
+        else: #In case that the user specifies the name of the image
             self.name_image = name_image
+        self.colors = colors #The colors of each function/ecuation.
         self.symbol = symbol #The symbol to take as the "x"
         self.x_values = np.linspace(x_range[0],x_range[1], 100) #The range of numbers to calculate.
         self.x_lim = x_lim #The range of numbres to show in the graph on the x axis.
@@ -98,10 +106,17 @@ class Grapher():
                     self.zeroDivisionErrors.append(f"WARNING: posible zero division error on the range of the function {self.functions[idx]} at the value of x {self.x_values[idx]}")
             legend = False
             if len(self.functions) > 1 and self.title != rf"${self.functions[0]}$":
-                plt.plot(self.x_values,y_values,label=fr'${self.functions[idx].replace("**","^")}$')
-                legend = True
+                if len(self.colors) != 0:
+                    plt.plot(self.x_values,y_values,label=fr'${self.functions[idx].replace("**","^")}$',color=self.colors[idx])
+                    legend = True
+                else:
+                    plt.plot(self.x_values,y_values,label=fr'${self.functions[idx].replace("**","^")}$')
+                    legend = True
             else:
-                plt.plot(self.x_values,y_values)
+                if len(self.colors) != 0:
+                    plt.plot(self.x_values,y_values,color=self.colors[0])
+                else:
+                    plt.plot(self.x_values,y_values)
         if legend:
             plt.legend()
         plt.savefig(f'{self.name_image}.png',dpi=800)
@@ -115,5 +130,5 @@ class Grapher():
 
 # Test
 if __name__ == '__main__':
-    xd = Grapher(["x**2"])
+    xd = Grapher(["x**2", "x+1"],colors=['green','black'])
     errors = xd.ploting()
