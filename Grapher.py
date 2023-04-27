@@ -14,7 +14,7 @@ import os
 import re
 
 ###########################################
-###Creating the class to make the graph.###
+###Creating the class to make the graph###
 ###########################################
 
 class Grapher():
@@ -23,9 +23,9 @@ class Grapher():
                  symbol: str = 'x',
                  x_range: list = [-10, 10, 100], 
                  x_lim: list = [], 
-                 x_axis_label:str = 'x', 
+                 x_axis_label:str = 'x',
                  y_lim: list = [], 
-                 y_axis_label:str = 'y', 
+                 y_axis_label:str = 'y',
                  title:str = None, 
                  grid:bool = True, 
                  name_image:str = None,
@@ -54,7 +54,7 @@ class Grapher():
         else:
             self.box_inches = box_inches # To set the inches of the box that encapsulates the graph.
         self.symbol = symbol #The symbol to take as the "x"
-        self.x_values = np.linspace(x_range[0],x_range[1], 10000) #The range of numbers to calculate.
+        self.x_values = np.linspace(x_range[0],x_range[1], 1000) #The range of numbers to calculate.
         self.x_lim = x_lim #The range of numbres to show in the graph on the x axis.
         self.x_axis_label = x_axis_label #To set the label of the x axis
         self.y_lim = y_lim #The range of numbres to show in the graph on the y axis.
@@ -68,6 +68,7 @@ class Grapher():
             f = lambdify(self.x_symbol,expr,"numpy")
             self.fs.append(f)
         self.zeroDivisionErrors = [] #To archive the possibles errors
+        self.path_to_image = '' #The path to the image generated.
         self.set_title()
         self.set_name_image()
     
@@ -95,7 +96,7 @@ class Grapher():
                         self.name_image = f'{base_name} - {i+1}{extension}'
                 if self.name_image not in files:
                     break
-        elif self.name_image == None and len(functions) > 1: #In case that there's more thant one function/ecuation showing on the graph, we will be naming it as "Function"
+        elif self.name_image == None and len(self.functions) > 1: #In case that there's more thant one function/ecuation showing on the graph, we will be naming it as "Function"
             files = os.listdir()
             self.name_image = "Functions"
             base_name = "Functions"
@@ -128,7 +129,6 @@ class Grapher():
         #Setting the y lim
         if len(self.y_lim) != 0:
             plt.ylim(self.y_lim)
-
         # The next functions are for show properly the ecuation/function on the legend of the graph.
         # A function to replace the exp to an e to show it properly.
         def replace_exp(match):
@@ -140,7 +140,8 @@ class Grapher():
             return match.group(1) + "^{" + match.group(2) + "}"
         def replace_multiplication(match):
             return match.group(1) + "" + match.group(2)
-        
+        y_min = 0
+        y_max = 0
         #Plotting the functions
         for idx,f in enumerate(self.fs):
             y_values = f(self.x_values)
@@ -148,9 +149,12 @@ class Grapher():
                 #In case that the function in the range ploted has a zero division error, will be reported.
                 if np.isinf(value):
                     self.zeroDivisionErrors.append(f"WARNING: posible zero division error on the range of the function {self.functions[idx]} at the value of x {self.x_values[idx]}")
+                if y_min > value:
+                    y_min = value
+                if y_max < value:
+                    y_max = value
             legend = False
             if len(self.functions) > 1 and self.title != rf"${self.functions[0]}$":
-                #
                 set_legend = self.functions[idx] #the equation/function to be modify to show it properly
                 set_legend = re.sub(r"(\w+)\s*\*\s*(\w+)", replace_multiplication, set_legend) # to replace the multiplication
                 set_legend = re.sub(r"(\w+)\*\*([\w/*]+)", replace_power, set_legend) # to replace the power
@@ -170,8 +174,12 @@ class Grapher():
                     plt.plot(self.x_values,y_values)
         if legend:
             plt.legend()
-        plt.savefig(f'{self.name_image}.png',bbox_inches=self.box_inches)
+        plt.savefig(f'{self.name_image}.png',bbox_inches=self.box_inches,dpi=600)
         # plt.show()
+        if os.name == 'posix':
+            self.path_to_image = os.getcwd()+f'/{self.name_image}.png'
+        else:
+            self.path_to_image = os.getcwd()+f'\{self.name_image}.png'
         if len(self.zeroDivisionErrors) > 0 :
             for error in self.zeroDivisionErrors:
                 print(error)
@@ -189,8 +197,5 @@ if __name__ == '__main__':
     y_axis_label = 'y-axis'
     title = 'Test Graph'
     grid = False
-
     graph = Grapher(functions=functions, symbol=symbol, x_range=x_range, x_axis_label=x_axis_label, y_axis_label=y_axis_label, title=title, grid=grid)
     errors = graph.plotting()
-    # xd = Grapher(["x**2", "x+1"],colors=['green','black'],name_image="coso")
-    # errors = xd.ploting()
