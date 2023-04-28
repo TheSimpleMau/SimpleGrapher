@@ -30,7 +30,7 @@ class Grapher():
                  grid:bool = True, 
                  name_image:str = None,
                  colors:list = [],
-                 box_inches='expanded') -> None:
+                 box_inches='Expanded') -> None:
         '''
         functions -> A list of functions that will be displayed on the graph.
         symbol -> A string representing the symbol used for the independent variable (default value: 'x').
@@ -49,10 +49,10 @@ class Grapher():
         self.name_image = name_image
         self.colors = colors #The colors of each function/ecuation.
         # To set the inches of the box that encapsulates the graph.
-        if box_inches == 'expanded':
+        if box_inches == 'Expanded':
             self.box_inches = None
         else:
-            self.box_inches = box_inches # To set the inches of the box that encapsulates the graph.
+            self.box_inches = box_inches.lower() # To set the inches of the box that encapsulates the graph.
         self.symbol = symbol #The symbol to take as the "x"
         self.x_values = np.linspace(x_range[0],x_range[1], 1000) #The range of numbers to calculate.
         self.x_lim = x_lim #The range of numbres to show in the graph on the x axis.
@@ -73,11 +73,38 @@ class Grapher():
         self.set_name_image()
     
 
+    def pretty_text(self,texto):
+        # The next functions are for show properly the ecuation/function on the legend of the graph.
+        # A function to replace the exp to an e to show it properly.
+        def replace_exp(match):
+            return "e^{" + match.group(1) + "}"
+        # A function to replace the division to a properly format to show.
+        def replace_division(match):
+            return "\\frac{" + match.group(1) + "}{" + match.group(2) + "}"
+        def replace_power(match):
+            return match.group(1) + "^{" + match.group(2) + "}"
+        def replace_multiplication(match):
+            return match.group(1) + "" + match.group(2)
+        def replace_sqrt(text):
+            return re.sub(r'sqrt\((.+?)\)', r'\\sqrt{\1}', text)
+        
+        set_text = re.sub(r"(\w+)\s*\*\s*(\w+)", replace_multiplication, texto) # to replace the multiplication
+        set_text = re.sub(r"(\w+)\*\*([\w/*]+)", replace_power, set_text) # to replace the power
+        set_text = re.sub(r"log(\d+)", r"log_{\1}", set_text) # to replace the log
+        set_text = re.sub(r"exp\((.+?)\)", replace_exp, set_text) # to replace the e value
+        set_text = re.sub(r"\((\d+)/(\w+)\)", replace_division, set_text) # to replace the fractions
+        set_text = replace_sqrt(set_text)
+
+        return set_text
+
+
     def set_title(self):
         #Setting the title of the graph if the users don't specify the name of it.
         if self.title is None:
             if len(self.functions) == 1:
-                self.title = fr'${self.functions[0].replace("**","^").replace("/","÷")}$' #In case of there's only one function to graph, then the title name will be the function.
+                # self.title = fr'${self.functions[0].replace("**","^").replace("/","÷")}$' #In case of there's only one function to graph, then the title name will be the function.
+                self.title = self.pretty_text(self.functions[0])
+                self.title = fr'${self.title}$'
             else:
                 self.title = "Functions" #Otherwise, the title will be "Funcitons".
         else:
@@ -87,13 +114,14 @@ class Grapher():
         # To save the files and, in case of the user don't choose a name for the image, don't overwrite the saved
         if self.name_image == None and len(self.functions) == 1: #In case that there's only one funciton, the name of the image will be the function
             files = os.listdir()
-            self.name_image = self.title.replace("$","").replace("/","÷") #To save the name of the image. Replacing the diagonal (/) to the simbol of division
-            i = 0
+            self.name_image = self.functions[0].replace("$","").replace("/","÷") #To save the name of the image. Replacing the diagonal (/) to the simbol of division
+            k = 0
             while True:
-                base_name, extension = os.path.splitext(self.name_image)
-                for i, file in enumerate(files):
-                    if file == self.name_image or file == f'{base_name} - {i}{extension}':
-                        self.name_image = f'{base_name} - {i+1}{extension}'
+                base_name = os.path.splitext(self.name_image)
+                for file in files:
+                    if file == self.name_image or file == f'{base_name} - {k}.png':
+                        k+=1
+                        self.name_image = f'{base_name} - {k}.png'
                 if self.name_image not in files:
                     break
         elif self.name_image == None and len(self.functions) > 1: #In case that there's more thant one function/ecuation showing on the graph, we will be naming it as "Function"
@@ -129,17 +157,6 @@ class Grapher():
         #Setting the y lim
         if len(self.y_lim) != 0:
             plt.ylim(self.y_lim)
-        # The next functions are for show properly the ecuation/function on the legend of the graph.
-        # A function to replace the exp to an e to show it properly.
-        def replace_exp(match):
-            return "e^{" + match.group(1) + "}"
-        # A function to replace the division to a properly format to show.
-        def replace_fraction(match):
-            return "\\frac{" + match.group(1) + "}{" + match.group(2) + "}"
-        def replace_power(match):
-            return match.group(1) + "^{" + match.group(2) + "}"
-        def replace_multiplication(match):
-            return match.group(1) + "" + match.group(2)
         y_min = 0
         y_max = 0
         #Plotting the functions
@@ -155,13 +172,8 @@ class Grapher():
                     y_max = value
             legend = False
             if len(self.functions) > 1 and self.title != rf"${self.functions[0]}$":
-                set_legend = self.functions[idx] #the equation/function to be modify to show it properly
-                set_legend = re.sub(r"(\w+)\s*\*\s*(\w+)", replace_multiplication, set_legend) # to replace the multiplication
-                set_legend = re.sub(r"(\w+)\*\*([\w/*]+)", replace_power, set_legend) # to replace the power
-                set_legend = re.sub(r"log(\d+)", r"log_{\1}", set_legend) # to replace the log
-                set_legend = re.sub(r"exp\((.+?)\)", replace_exp, set_legend) # to replace the e value
-                set_legend = re.sub(r"(\d+)/(\w+)", replace_fraction, set_legend) # to replace the fractions
-                if len(self.colors) != 0:
+                set_legend = self.pretty_text(self.functions[idx]) #the equation/function to be modify to show it properly
+                if len(self.colors) != 0 and len(self.colors) == len(self.functions):
                     plt.plot(self.x_values,y_values,label=fr'${set_legend}$',color=self.colors[idx])
                     legend = True
                 else:
@@ -190,7 +202,7 @@ class Grapher():
 # Test
 if __name__ == '__main__':
     ''' Only to tests '''
-    functions = ["x**1/2", "sin(x**2) * 5", "-1/x", "log(x/5) + x**2 + 1/x", "exp(x/2)","x**2 + (1/x) - (x)"]
+    functions = ["sqrt(x)", "sin(x**2) * 5", "-1/x", "log(x/5) + x**2 + 1/x", "exp(x/2)","x**2 + (1/x) - (x)"]
     symbol = 'x'
     x_range = [0.1, 5, 100]
     x_axis_label = 'x-axis'
