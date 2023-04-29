@@ -42,8 +42,8 @@ And it will start
 
 <table>
   <tr>
-    <td><img src="https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/example1.png" width="300" alt="Example one graph generated"></td>
-    <td><img src="https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/example2.png" width="300" alt="Example two graph generated"></td>
+    <td align="center"><img src="https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/example1.png" width="500" alt="Example one graph generated"></td>
+    <td align="center"><img src="https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/example2.png" width="500" alt="Example two graph generated"></td>
   </tr>
 </table>
 
