@@ -1,7 +1,3 @@
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
 # Simple Grapher 📉📈
 
 ![Main window of the program](https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/main_window.png)
