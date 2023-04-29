@@ -49,11 +49,11 @@ And it will start
 
 ### Differents windows on the program
 
-The configuration window.
+#### The configuration window.
 
 ![Main window of the program](https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/configuration_window.png)
 
-Example when a fucntion has an error.
+#### Example when a fucntion has an error.
 
 ![Main window of the program](https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/configuration_window.png)
 
