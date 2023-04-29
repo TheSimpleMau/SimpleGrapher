@@ -55,7 +55,7 @@ And it will start
 
 #### Example when a fucntion has an error.
 
-![Main window of the program](https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/configuration_window.png)
+![Main window of the program](https://github.com/TheSimpleMau/SimpleGrapher/blob/main/Images/error_example.png)
 
 
 ## Known bugs an errors
