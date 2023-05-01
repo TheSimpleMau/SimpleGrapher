@@ -243,29 +243,34 @@ def graph(window:sg.Window,values:dict,__advance_settings:list or None) -> None:
         sg.Popup("ERROR: No haz ingresado ningúna funcion para evaluar.", title="ERROR")
     else:
         #Now, we'll check if there's a name to save the graph generated  and if there's any kind of configuration at the graph.
-        if values['name_file'] != '' and __advance_settings != None:
-            graph = Grapher(functions=formulas,
-                            name_image=values['name_file'],
-                            x_range=__advance_settings['x_range'],
-                            x_axis_label=__advance_settings['x_axis_label'],
-                            y_lim=__advance_settings['y_lim'],
-                            y_axis_label=__advance_settings['y_axis_label'],
-                            title=__advance_settings['title'],
-                            grid=__advance_settings['grid'],
-                            colors=__advance_settings['colors'],
-                            box_inches=__advance_settings['box_inches'])
-        elif __advance_settings != None:
-            graph = Grapher(functions=formulas,
-                            x_range=__advance_settings['x_range'],
-                            x_axis_label=__advance_settings['x_axis_label'],
-                            y_lim=__advance_settings['y_lim'],
-                            y_axis_label=__advance_settings['y_axis_label'],
-                            title=__advance_settings['title'],
-                            grid=__advance_settings['grid'],
-                            colors=__advance_settings['colors'],
-                            box_inches=__advance_settings['box_inches'])
+        if values['name_file'] != '':
+            if __advance_settings != None:
+                graph = Grapher(functions=formulas,
+                                name_image=values['name_file'],
+                                x_range=__advance_settings['x_range'],
+                                x_axis_label=__advance_settings['x_axis_label'],
+                                y_lim=__advance_settings['y_lim'],
+                                y_axis_label=__advance_settings['y_axis_label'],
+                                title=__advance_settings['title'],
+                                grid=__advance_settings['grid'],
+                                colors=__advance_settings['colors'],
+                                box_inches=__advance_settings['box_inches'])
+            else:
+                graph = Grapher(functions=formulas,
+                                name_image=values['name_file'])
         else:
-            graph = Grapher(functions=formulas)
+            if __advance_settings != None:
+                graph = Grapher(functions=formulas,
+                                x_range=__advance_settings['x_range'],
+                                x_axis_label=__advance_settings['x_axis_label'],
+                                y_lim=__advance_settings['y_lim'],
+                                y_axis_label=__advance_settings['y_axis_label'],
+                                title=__advance_settings['title'],
+                                grid=__advance_settings['grid'],
+                                colors=__advance_settings['colors'],
+                                box_inches=__advance_settings['box_inches'])
+            else:
+                graph = Grapher(functions=formulas)
         #At the end, we'll plot the graph and save the error if any happen.
         errors = graph.plotting()
         #Upload the error text
@@ -355,5 +360,6 @@ def main() -> None:
     #Remove the temporarly file
     os.system('rm .temp.png')
 
+#Entry point
 if __name__ == '__main__':
     main()
