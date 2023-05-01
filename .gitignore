@@ -4,4 +4,6 @@ __pycache__/
 venv/
 tests.py
 *.png
+Videos/*
+*.mp4
 !Images/*.png

@@ -94,7 +94,6 @@ class Grapher():
         set_text = re.sub(r"exp\((.+?)\)", replace_exp, set_text) # to replace the e value
         set_text = re.sub(r"\((\d+)/(\w+)\)", replace_division, set_text) # to replace the fractions
         set_text = replace_sqrt(set_text)
-
         return set_text
 
 
