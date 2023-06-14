@@ -20,9 +20,9 @@ pip install -r requirements.txt
 ## Usage 👨‍💻
 
 To start graphing, just do in your terminal at the floder where you save it:
-´´´ bash
+```bash
 python3 main.py
-´´´
+```
 And it will start
 
 ## Limitations ⛔️
